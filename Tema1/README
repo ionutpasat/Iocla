@@ -1,0 +1,80 @@
+Ideea pe care am mers a fost sa iau fiecare linie data ca input pe rand si sa o sparg folosind "strsep" in
+"comanda" + "parametru/parametri". Asta fac in main, iau cate o linie de la stdin pe care o trimit
+functiei "read" de unde mai departe este spart stringul si sunt apelate functiile cu parametrii corespunzatori.
+
+___TOUCH___(parent, name)___
+->verific daca numele nu exista deja in lista de fisiere, daca da ies din functie              
+->verific daca nu cumva exista un director cu acest nume, daca da, ma intorc
+->depinzand de cazul in care lista este goala sau nu, adaug fisierul in lista
+
+___MKDIR___(parent, name)___
+->verific daca numele nu exista dejain lista de directoare, daca da ies din functie              
+->verific daca nu cumva exista un fisier cu acest nume, daca da, ma intorc
+->depinzand de cazul in care lista este goala sau nu, adaug directorul in lista
+
+___LS___(parent)___
+->parcurg lista de directoare si o afisez
+->parcurg lista de fisiere si o afisez
+->daca listele sunt goale nu se va afisa nimic
+
+___RM___(parent, name)___
+->verific daca lista de fisere este nula, daca da, ies din functie
+->parcurg lista de fisiere pana gasesc numele fisierului dat ca parametru, apoi sunt 3 cazuri de sters:
+1)Fisierul se afla la inceputul listei => capul listei devine succesorul fisierului in lista iar cel 
+    initial este eliberat
+2)Fisierul se afla la sfarsitul listei => parcurg lista pana la penultimul element iar elementul urmator
+    il fac NULL, apoi eliberez memoria pt fisierul sters
+3)Fisierul se afla undeva la mijlocul listei => parcurg lista pana la predecesorul fisierului de sters,
+    iar succesorul acestuia va deveni succesorul fisierului sters, caruia ii eliberez si memoria
+->daca fisierul nu se gaseste se afiseaza un mesaj corespunzator
+
+___RMDIR___(parent, name)___
+->verific daca lista de directoare este nula, daca da, ies din functie
+->parcurg lista de directoare pana gasesc numele directorului dat ca parametru, apoi sunt 3 cazuri de sters:
+1)Directorul se afla la inceputul listei => capul listei devine succesorul directorului in lista iar cel 
+    initial este eliberat
+2)Directorul se afla la sfarsitul listei => parcurg lista pana la penultimul element iar elementul urmator
+    il fac NULL, apoi eliberez memoria pt directorul sters
+3)Directorul se afla undeva la mijlocul listei => parcurg lista pana la predecesorul directorului de sters,
+    iar succesorul acestuia va deveni succesorul directorului sters, caruia ii eliberez si memoria
+->stergerea directoarelor se face recursiv cu tot ce se afla in ele folosind functia "free_dirs"
+->daca directorul nu se gaseste se afiseaza un mesaj corespunzator
+
+___CD___(target, name)___
+->verific intai daca argumentul este ".." unde sunt 2 cazuri:
+1)Directorul curent este home, unde in acest caz nu se intampla nimic
+2)Directorul curent este diferit de home, caz in care directorul ccurent devine target->parent
+->daca argumentul este un nume, atunci parcurg lista si il caut, iar daca il gasesc schimb directorul
+    curent cu acesta, in caz contrar se afiseaza un mesaj corespunzator
+  
+___PWD___(target)___
+->folosesc 2 siruri (unul care va fi cel returnat si unul auxiliar) pe care le concatenez succesiv
+->deoarece din directorul curent pot merge doar spre home(adica in directia inversa de cum vreau sa afisez), 
+    imi formez in stringul auxiliar directorul curent, care ma ajuta sa inversez ordinea asamblarii sirului
+    final prin succesiunea unei concatenarii si a unei coperi inapoi in sirul caii finale
+->pot asocia cu o interschimbare apoi o concatenare cu sirul de returnat actualizat de fiecare data in bucla
+
+___STOP___(target)___
+->eliberez toata memoria ierarhiei folosind functiile recursive "free_dirs" si "free_files"
+->opresc programul
+
+___TREE___(target, level)___
+->in functie de nivel afisez spatiile intr o bucla apoi afisez directorul "target", apoi parcurg in "adancime"
+    ierarhia de directoare copil si apelez recursiv functia pana se ajunge la NULL ca mai apoi sa se intoarca
+->dupa prioritatea de afisare a directoarelor, afisez si toate fisierele din acestea cu spatiile coresp.
+->doar ca mai apoi sa parcurg in "latime" si sa apelez functia pentru "fratii" directorului target
+
+___MV___(parent, oldname, newname)___
+->verific daca exista deja un director/fisier cu numele "newname", daca da, afisez un mesaj corespunzator 
+->verific daca exista deja un director/fisier cu numele "oldname", daca nu, afisez un mesaj corespunzator,
+    iar daca exista pastrez un pointer catre acesta 
+->daca oldname exista si e fisier il sterg folosind "rm" si il adaug cu "newname" folosind "touch"
+->daca oldname e director avem 3 cazuri:
+1)Directorul este capul listei => capul listei devine succesorul directorului in lista, fac un director 
+    nou caruia ii atribui legaturile cu headul fisierelor si al directoarelor directorului de sters apoi 
+    ii eliberez memoria
+2)Daca directorul se afla la finalul listei doar il redenumesc
+3)daca directorul se afla undeva la mijloc parcurg lista pana la predecesorul directorului de sters,iar 
+    succesorul acestuia va deveni succesorul directorului sters, fac un director nou caruia ii atribui 
+    legaturile cu headul fisierelor si al directoarelor directorului de sters apoi ii eliberez memoria
+
